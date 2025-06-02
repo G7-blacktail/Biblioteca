@@ -29,7 +29,6 @@ namespace biblioteca_api.Models
         public decimal VlMulta { get; set; } = 0;
 
         [Column("st_locacao")]
-        [Required]
         [StringLength(50)]
         public string StLocacao { get; set; }
 
