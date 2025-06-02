@@ -8,30 +8,19 @@
         <p><strong>Editora:</strong> {{ livro.editora }}</p>
         <p><strong>Ano:</strong> {{ livro.ano }}</p>
         <p><strong>ISBN:</strong> {{ livro.isbn }}</p>
-        <p><strong>Disponíveis:</strong> {{ livro.disponivel }}</p>
+        <p><strong>Preço de locação:</strong> R$ {{ livro.preco.toFixed(2) }}</p>
+        <p><strong>Status:</strong> {{ livro.disponivel > 0 ? 'Disponível' : 'Alugado' }}</p>
+        <p v-if="livro.disponivel === 0"><strong>Com usuário:</strong> João da Silva</p>
       </template>
     </Card>
   </div>
 </template>
 
 <script>
-import Card from 'primevue/card'
-
 export default {
-  name: 'BookDetail',
-  components: { Card },
-  data() {
-    return {
-      livro: {
-        id: this.$route.params.id,
-        titulo: 'Dom Casmurro',
-        autor: 'Machado de Assis',
-        editora: 'Editora X',
-        ano: 1899,
-        isbn: '123-456-789',
-        disponivel: 3
-      }
-    }
+  name: 'BookDetails',
+  props: {
+    livro: Object
   }
 }
 </script>
