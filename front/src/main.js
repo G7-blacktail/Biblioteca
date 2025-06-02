@@ -10,9 +10,10 @@ import Aura from '@primeuix/themes/aura';
 import 'primeicons/primeicons.css'
 import 'primeflex/primeflex.css'
 
-
 const app = createApp(App)
 
+app.use(router)
+app.use(store)
 app.use(PrimeVue, {
     theme: {
         preset: Aura,
@@ -24,7 +25,6 @@ app.use(PrimeVue, {
 
     }
 })
-app.use(router)
-app.use(store)
+
 
 app.mount('#app')
