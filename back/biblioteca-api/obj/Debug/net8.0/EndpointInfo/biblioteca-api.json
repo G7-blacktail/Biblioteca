@@ -398,6 +398,44 @@
         }
       }
     },
+    "/api/Locacoes/dashboard": {
+      "get": {
+        "tags": [
+          "Locacoes"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocacaoDashboardRepresentation"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocacaoDashboardRepresentation"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocacaoDashboardRepresentation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Usuarios": {
       "get": {
         "tags": [
@@ -583,12 +621,22 @@
         }
       }
     },
-    "/WeatherForecast": {
+    "/api/Usuarios/usuario/{idUsuario}": {
       "get": {
         "tags": [
-          "WeatherForecast"
+          "Usuarios"
         ],
-        "operationId": "GetWeatherForecast",
+        "parameters": [
+          {
+            "name": "idUsuario",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -597,7 +645,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
+                    "$ref": "#/components/schemas/LocacaoDashboardRepresentation"
                   }
                 }
               },
@@ -605,7 +653,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
+                    "$ref": "#/components/schemas/LocacaoDashboardRepresentation"
                   }
                 }
               },
@@ -613,7 +661,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
+                    "$ref": "#/components/schemas/LocacaoDashboardRepresentation"
                   }
                 }
               }
@@ -724,6 +772,52 @@
         },
         "additionalProperties": false
       },
+      "LocacaoDashboardRepresentation": {
+        "type": "object",
+        "properties": {
+          "idLocacao": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "livroTitulo": {
+            "type": "string",
+            "nullable": true
+          },
+          "usuarioNome": {
+            "type": "string",
+            "nullable": true
+          },
+          "usuarioEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "stLocacao": {
+            "type": "string",
+            "nullable": true
+          },
+          "pagamentoPendente": {
+            "type": "boolean"
+          },
+          "vlMulta": {
+            "type": "number",
+            "format": "double"
+          },
+          "dtRetirada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dtDevolucaoPrevista": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dtDevolucaoReal": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "LocacaoInputRepresentation": {
         "required": [
           "dtDevolucaoPrevista",
@@ -791,29 +885,6 @@
             "items": {
               "$ref": "#/components/schemas/Locacao"
             },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "WeatherForecast": {
-        "type": "object",
-        "properties": {
-          "date": {
-            "type": "string",
-            "format": "date"
-          },
-          "temperatureC": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "temperatureF": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "summary": {
-            "type": "string",
             "nullable": true
           }
         },

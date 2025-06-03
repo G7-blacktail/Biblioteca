@@ -6,18 +6,23 @@ using System;
 
 using biblioteca_api.Models;
 using biblioteca_api.Repositories;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BibliotecaAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] 
+    [Route("api/[controller]")]
     public class LocacoesController : ControllerBase
     {
         private readonly ILocacaoRepository _locacaoRepository;
+        private readonly ILivroRepository _livroRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public LocacoesController(ILocacaoRepository locacaoRepository)
+        public LocacoesController(ILocacaoRepository locacaoRepository, ILivroRepository livroRepository, IUsuarioRepository usuarioRepository)
         {
             _locacaoRepository = locacaoRepository;
+            _livroRepository = livroRepository;
+            _usuarioRepository = usuarioRepository;
         }
 
         // GET: api/Locacoes
@@ -42,22 +47,29 @@ namespace BibliotecaAPI.Controllers
 
         // POST: api/Locacoes - Registrar nova locação
         [HttpPost]
-        public async Task<ActionResult<Locacao>> PostLocacao(Locacao locacao)
+        public async Task<ActionResult<Locacao>> PostLocacao(LocacaoInputRepresentation input)
         {
-            // Preencher campos que o usuário não precisa enviar
-            locacao.DtRetirada = DateTime.UtcNow; // Data de retirada agora
-            locacao.StLocacao = "Pendente"; // Status inicial
-            locacao.VlMulta = 0.00m; // Multa inicial
+            var livro = await _livroRepository.GetLivroByIdAsync(input.IdLivro);
+            var usuario = await _usuarioRepository.GetUsuarioByIdAsync(input.IdUsuario);
 
-            // A lógica de validação de disponibilidade e decremento está em LocarLivroAsync
+            if (livro == null || usuario == null)
+                return BadRequest("Livro ou Usuário não encontrado.");
+
+            var locacao = new Locacao
+            {
+                IdLivro = input.IdLivro,
+                IdUsuario = input.IdUsuario,
+                DtRetirada = DateTime.UtcNow,
+                DtDevolucaoPrevista = input.DtDevolucaoPrevista,
+                StLocacao = "Pendente",
+                VlMulta = 0.00m
+            };
+
             bool sucessoLocacao = await _locacaoRepository.LocarLivroAsync(locacao);
 
             if (!sucessoLocacao)
-            {
                 return BadRequest("Não foi possível realizar a locação. Verifique a disponibilidade do livro ou se os IDs de livro/usuário são válidos.");
-            }
 
-            // Retorna 201 Created e a URL do novo recurso (com o ID gerado pelo DB)
             return CreatedAtAction(nameof(GetLocacao), new { id = locacao.IdLocacao }, locacao);
         }
 
@@ -128,6 +140,13 @@ namespace BibliotecaAPI.Controllers
 
             await _locacaoRepository.DeleteLocacaoAsync(id);
             return NoContent(); // 204 No Content
+        }
+        
+        [HttpGet("dashboard")]
+        public async Task<ActionResult<IEnumerable<LocacaoDashboardRepresentation>>> GetLocacoesDashboard()
+        {
+            var locacoes = await _locacaoRepository.GetAllLocacoesDashboardAsync();
+            return Ok(locacoes);
         }
     }
 }

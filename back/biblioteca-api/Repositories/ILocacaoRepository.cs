@@ -10,8 +10,10 @@ namespace biblioteca_api.Repositories
         Task UpdateLocacaoAsync(Locacao locacao);
         Task DeleteLocacaoAsync(int id);
         Task<bool> LocacaoExistsAsync(int id);
+        Task<IEnumerable<LocacaoDashboardRepresentation>> GetLocacoesDashboardUsuarioAsync(int idUsuario);
 
         // Métodos específicos para a lógica de negócio
+        Task<IEnumerable<LocacaoDashboardRepresentation>> GetAllLocacoesDashboardAsync();
         Task<bool> LocarLivroAsync(Locacao locacao);
         Task<Locacao> DevolverLivroAsync(int idLocacao);
     }

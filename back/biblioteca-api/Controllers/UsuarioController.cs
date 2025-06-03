@@ -13,8 +13,11 @@ namespace BibliotecaAPI.Controllers
     {
         private readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuariosController(IUsuarioRepository usuarioRepository)
+        private ILocacaoRepository _locacaoRepository;
+
+        public UsuariosController(IUsuarioRepository usuarioRepository, ILocacaoRepository locacaoRepository)
         {
+            _locacaoRepository = locacaoRepository;
             _usuarioRepository = usuarioRepository;
         }
 
@@ -51,7 +54,7 @@ namespace BibliotecaAPI.Controllers
             // O Hashing da senha agora ocorre no repositório AddUsuarioAsync
             await _usuarioRepository.AddUsuarioAsync(usuario);
 
-            usuario.DsSenha = null; 
+            usuario.DsSenha = null;
             return CreatedAtAction(nameof(GetUsuario), new { id = usuario.IdUsuario }, usuario);
         }
 
@@ -100,6 +103,13 @@ namespace BibliotecaAPI.Controllers
 
             await _usuarioRepository.DeleteUsuarioAsync(id);
             return NoContent();
+        }
+        
+        [HttpGet("usuario/{idUsuario}")]
+        public async Task<ActionResult<IEnumerable<LocacaoDashboardRepresentation>>> GetLocacoesUsuario(int idUsuario)
+        {
+            var locacoes = await _locacaoRepository.GetLocacoesDashboardUsuarioAsync(idUsuario);
+            return Ok(locacoes);
         }
     }
 }

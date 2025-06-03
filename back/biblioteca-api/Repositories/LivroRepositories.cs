@@ -73,6 +73,11 @@ namespace biblioteca_api.Repositories
 
                 return "Processo de devolução iniciado. Verifique o banco de dados para o status final e multa.";
             }
+
+        public Task<Usuario> GetUsuarioByIdAsync(int idUsuario)
+        {
+            throw new NotImplementedException();
         }
+    }
     
 }

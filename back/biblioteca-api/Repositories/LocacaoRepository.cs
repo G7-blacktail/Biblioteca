@@ -12,19 +12,19 @@ namespace biblioteca_api.Repositories
     public class LocacaoRepository : ILocacaoRepository
     {
         private readonly BibliotecaContext _context;
-        private readonly ILivroRepository _livroRepository; // Injetar LivroRepository
+        private readonly ILivroRepository _livroRepository;
 
         public LocacaoRepository(BibliotecaContext context, ILivroRepository livroRepository)
         {
             _context = context;
-            _livroRepository = livroRepository; // Atribuir o repositório de livros
+            _livroRepository = livroRepository;
         }
 
         public async Task<IEnumerable<Locacao>> GetAllLocacoesAsync()
         {
             return await _context.Locacoes
-                                 .Include(l => l.Livro)   // Inclui os dados do livro
-                                 .Include(l => l.Usuario) // Inclui os dados do usuário
+                                 .Include(l => l.Livro)
+                                 .Include(l => l.Usuario)
                                  .ToListAsync();
         }
 
@@ -38,8 +38,6 @@ namespace biblioteca_api.Repositories
 
         public async Task AddLocacaoAsync(Locacao locacao)
         {
-            // Este método é mais um wrapper para o LocarLivroAsync, se usarmos o controller
-            // Chamado diretamente pelo controlador
             _context.Locacoes.Add(locacao);
             await _context.SaveChangesAsync();
         }
@@ -65,19 +63,18 @@ namespace biblioteca_api.Repositories
             return await _context.Locacoes.AnyAsync(e => e.IdLocacao == id);
         }
 
-        // Lógica de negócio para locar um livro
         public async Task<bool> LocarLivroAsync(Locacao locacao)
         {
             var livro = await _livroRepository.GetLivroByIdAsync(locacao.IdLivro);
 
             if (livro == null || livro.QtDisponivel <= 0)
             {
-                return false; // Livro não encontrado ou indisponível
+                return false;
             }
 
             // Diminuir a quantidade disponível do livro
             livro.QtDisponivel--;
-            await _livroRepository.UpdateLivroAsync(livro); // Atualiza o livro no banco
+            await _livroRepository.UpdateLivroAsync(livro);
 
             // Definir status da locação
             locacao.StLocacao = "Pendente";
@@ -124,6 +121,45 @@ namespace biblioteca_api.Repositories
             await _context.SaveChangesAsync();
 
             return locacao; // Retorna a locação atualizada
+        }
+
+        public async Task<IEnumerable<LocacaoDashboardRepresentation>> GetAllLocacoesDashboardAsync()
+        {
+            return await _context.Locacoes
+                .Include(l => l.Livro)
+                .Include(l => l.Usuario)
+                .Select(l => new LocacaoDashboardRepresentation
+                {
+                    IdLocacao = l.IdLocacao,
+                    LivroTitulo = l.Livro.NmTitulo,
+                    UsuarioNome = l.Usuario.NmUsuario,
+                    UsuarioEmail = l.Usuario.NmEmail,
+                    StLocacao = l.StLocacao,
+                    PagamentoPendente = l.StLocacao == "Pendente",
+                    VlMulta = l.VlMulta,
+                    DtRetirada = l.DtRetirada,
+                    DtDevolucaoPrevista = l.DtDevolucaoPrevista,
+                    DtDevolucaoReal = l.DtDevolucaoReal
+                })
+                .ToListAsync();
+        }
+        
+        public async Task<IEnumerable<LocacaoDashboardRepresentation>> GetLocacoesDashboardUsuarioAsync(int idUsuario)
+        {
+            return await _context.Locacoes
+                .Include(l => l.Livro)
+                .Where(l => l.IdUsuario == idUsuario)
+                .Select(l => new LocacaoDashboardRepresentation
+                {
+                    IdLocacao = l.IdLocacao,
+                    LivroTitulo = l.Livro.NmTitulo,
+                    StLocacao = l.StLocacao,
+                    DtDevolucaoPrevista = l.DtDevolucaoPrevista,
+                    DtDevolucaoReal = l.DtDevolucaoReal,
+                    VlMulta = l.VlMulta,
+                    PagamentoPendente = l.StLocacao == "Pendente"
+                })
+                .ToListAsync();
         }
     }
 }

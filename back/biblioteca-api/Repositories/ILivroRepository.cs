@@ -6,6 +6,7 @@ namespace biblioteca_api.Repositories
     {
         Task<IEnumerable<Livro>> GetAllLivrosAsync();
         Task<Livro> GetLivroByIdAsync(int id);
+        Task<Usuario> GetUsuarioByIdAsync(int idUsuario);
         Task AddLivroAsync(Livro livro);
         Task UpdateLivroAsync(Livro livro);
         Task DeleteLivroAsync(int id);

@@ -1,26 +1,34 @@
 <template>
   <div class="p-m-4">
     <h3>Detalhes do Livro</h3>
-    <Card>
-      <template #title>{{ livro.titulo }}</template>
-      <template #content>
-        <p><strong>Autor:</strong> {{ livro.autor }}</p>
-        <p><strong>Editora:</strong> {{ livro.editora }}</p>
-        <p><strong>Ano:</strong> {{ livro.ano }}</p>
-        <p><strong>ISBN:</strong> {{ livro.isbn }}</p>
-        <p><strong>Preço de locação:</strong> R$ {{ livro.preco.toFixed(2) }}</p>
-        <p><strong>Status:</strong> {{ livro.disponivel > 0 ? 'Disponível' : 'Alugado' }}</p>
-        <p v-if="livro.disponivel === 0"><strong>Com usuário:</strong> João da Silva</p>
-      </template>
-    </Card>
+    <div v-if="livro">
+      <p><strong>Título:</strong> {{ livro.nmTitulo }}</p>
+      <p><strong>Autor:</strong> {{ livro.nmAutor }}</p>
+      <p><strong>Ano:</strong> {{ livro.aaPublicacao }}</p>
+      <p><strong>Disponível:</strong> {{ livro.qtDisponivel }}</p>
+      <Button label="Voltar" class="p-mt-2" @click="$router.back()" />
+    </div>
+    <div v-else>
+      Carregando...
+    </div>
   </div>
 </template>
 
 <script>
+import livrosService from '@/services/livros.services'
+import Button from 'primevue/button'
+
 export default {
   name: 'BookDetails',
-  props: {
-    livro: Object
+  components: { Button },
+  data() {
+    return {
+      livro: null
+    }
+  },
+  async mounted() {
+    const id = this.$route.params.id
+    this.livro = await livrosService.getLivro(id)
   }
 }
 </script>

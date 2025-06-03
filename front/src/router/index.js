@@ -6,7 +6,10 @@ import UserDashboard from '../components/UserDashBoard.vue';
 import NotFound from '../views/NotFound.vue';
 import BookList from '../components/BookList.vue';
 import BookDetails from '../components/BookDetails.vue';
+import NewBook from '../components/NewBook.vue';
 import UserList from '../components/UserList.vue';
+import UserDetails from '../components/UserDetails.vue';
+import NewUser from '../components/NewUser.vue';
 import store from '../store';
 
 const routes = [
@@ -15,8 +18,11 @@ const routes = [
   { path: '/admin', component: AdministradorDashBoard, meta: { requiresAuth: true, isAdmin: true } },
   { path: '/user', component: UserDashboard, meta: { requiresAuth: true } },
   { path: '/livros', component: BookList, meta: { requiresAuth: true } },
-  { path: '/livros/:id', name: 'BookDetail', component: BookDetails, meta: { requiresAuth: true } },
+  { path: '/livros/:id', component: BookDetails, meta: { requiresAuth: true } },
   { path: '/admin/usuarios', component: UserList, meta: { requiresAuth: true, isAdmin: true } },
+  { path: '/admin/usuarios/:id', component: UserDetails, meta: { requiresAuth: true, isAdmin: true } },
+  { path: '/admin/novo-usuario', component: NewUser, meta: { requiresAuth: true, isAdmin: true } },
+  { path: '/admin/novo-livro', component: NewBook, meta: { requiresAuth: true, requiresAdmin: true }},
   { path: '/login', component: LoginForm },
   { path: '/:catchAll(.*)', component: NotFound }
 ];
